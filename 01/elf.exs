@@ -27,10 +27,40 @@ defmodule Elf do
       end
     end
   end
+
+  def find_second("") do
+    0
+  end
+
+  def find_second(nil) do
+    0
+  end
+
+  def find_second(word) do
+    w =
+      String.replace(word, ~r/(one|two|three|four|five|six|seven|eight|nine)/, fn match ->
+        case match do
+          "one" -> "1"
+          "two" -> "2"
+          "three" -> "3"
+          "four" -> "4"
+          "five" -> "5"
+          "six" -> "6"
+          "seven" -> "7"
+          "eight" -> "8"
+          "nine" -> "9"
+        end
+      end)
+      |> String.replace(~r/[a-z]/, "")
+
+    parsed = String.to_integer(String.at(w, 0) <> String.at(w, String.length(w) - 1))
+    IO.inspect({parsed, word})
+    parsed
+  end
 end
 
 case(File.read("input.txt")) do
   {:ok, contents} ->
-    x = Enum.map(String.split(contents, "\n"), &Elf.find_first/1) |> Enum.sum()
+    x = Enum.map(String.split(contents, "\n"), &Elf.find_second/1) |> Enum.sum()
     IO.puts(x)
 end
