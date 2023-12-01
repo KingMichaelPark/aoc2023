@@ -1,14 +1,36 @@
+defmodule Elf do
+  def find_first(_, idx \\ 0, first \\ nil, last \\ nil)
+
+  def find_first("", _, _, _) do
+    0
+  end
+
+  def find_first(nil, _, _, _) do
+    0
+  end
+
+  def find_first(word, idx, first, last) do
+    if(idx == String.length(word)) do
+      String.to_integer(Integer.to_string(first) <> Integer.to_string(last))
+    else
+      attempt = Integer.parse(String.at(word, idx))
+
+      case {attempt, first} do
+        {:error, f} ->
+          find_first(word, idx + 1, f, last)
+
+        {{val, _}, nil} ->
+          find_first(word, idx + 1, val, val)
+
+        {{val, _}, f} ->
+          find_first(word, idx + 1, f, val)
+      end
+    end
+  end
+end
+
 case(File.read("input.txt")) do
   {:ok, contents} ->
-    total =
-      String.split(contents, "\n")
-      |> Enum.map(&String.split(&1, ""))
-      |> Enum.map(fn [first | rest] -> {first, Enum.at(rest, -1)} end)
-      |> Enum.map(fn {first, last} -> String.to_integer(first) + String.to_integer(last) end)
-      |> Enum.reduce(0, &+/2)
-
-    IO.inspect(total)
-
-  {_, _} ->
-    IO.inspect("Can't read file")
+    x = Enum.map(String.split(contents, "\n"), &Elf.find_first/1) |> Enum.sum()
+    IO.puts(x)
 end
